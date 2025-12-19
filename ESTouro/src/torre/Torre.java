@@ -75,6 +75,20 @@ public interface Torre extends Cloneable {
 	public int getModoAtaque();
 
 	/**
+	 * Define a estratégia de ataque da torre.
+	 * 
+	 * @param estrategia a nova estratégia
+	 */
+	public void setEstrategia(EstrategiaAtaque estrategia);
+
+	/**
+	 * Devolve a estratégia de ataque atual.
+	 * 
+	 * @return a estratégia de ataque
+	 */
+	public EstrategiaAtaque getEstrategia();
+
+	/**
 	 * define qual o raio de accao da torre. O raio de accao
 	 * é a distância máxima a que a torre consegue visualizar
 	 * os inimigos

@@ -13,6 +13,7 @@ import mundo.Mundo;
 import prof.jogos2D.image.ComponenteMultiAnimado;
 import prof.jogos2D.util.DetectorColisoes;
 
+
 /**
  * Classe que implementa os comportamentos e variáveis comuns a todos as torres.
  * Tambám possui alguns métodos auxiliares para as várias torres
@@ -23,6 +24,7 @@ public abstract class TorreDefault implements Torre {
 	private ComponenteMultiAnimado imagem; // desenho da torre
 
 	private int modoAtaque = ATACA_PRIMEIRO; // modo de ataque da torre
+	private EstrategiaAtaque estrategia; // estratégia de ataque atual
 	private int raioAtaque; // raio de ataque, isto é, área circular onde consegue detetar bloons
 	private Point pontoDisparo; // ponto de onde sai o disparo
 
@@ -53,6 +55,7 @@ public abstract class TorreDefault implements Torre {
 		this.frameDisparoDelay = delayDisparo;
 		this.pontoDisparo = Objects.requireNonNull(pontoDisparo);
 		this.raioAtaque = raioAtaque;
+		this.estrategia = new AtaquePrimeiro(); // Estratégia padrão
 	}
 
 	protected void atualizarCicloDisparo() {
@@ -135,11 +138,38 @@ public abstract class TorreDefault implements Torre {
 	@Override
 	public void setModoAtaque(int modo) {
 		modoAtaque = modo;
+		// Atualiza a estratégia com base no modo
+		switch (modo) {
+			case ATACA_PRIMEIRO:
+				this.estrategia = new AtaquePrimeiro();
+				break;
+			case ATACA_ULTIMO:
+				this.estrategia = new AtaqueUltimo();
+				break;
+			case ATACA_PERTO:
+				this.estrategia = new AtaquePerto();
+				break;
+			case ATACA_JUNTOS:
+				this.estrategia = new AtaqueJuntos();
+				break;
+			default:
+				this.estrategia = new AtaquePrimeiro();
+		}
 	}
 
 	@Override
 	public int getModoAtaque() {
 		return modoAtaque;
+	}
+
+	@Override
+	public void setEstrategia(EstrategiaAtaque estrategia) {
+		this.estrategia = estrategia;
+	}
+
+	@Override
+	public EstrategiaAtaque getEstrategia() {
+		return estrategia;
 	}
 
 	/**
@@ -174,6 +204,9 @@ public abstract class TorreDefault implements Torre {
 			copia.imagem = imagem.clone();
 			copia.mundo = null;
 			copia.pontoDisparo = new Point(pontoDisparo);
+			// Nota: a estratégia é partilhada ou recriada? Aqui mantemos a referência ou criamos nova se for stateful.
+			// Como AtaquePrimeiro é stateless, não há problema, mas idealmente reconfiguramos:
+			copia.setModoAtaque(modoAtaque); 
 			return copia;
 		} catch (CloneNotSupportedException e) {
 			return null;
