@@ -16,5 +16,5 @@ public interface EstrategiaAtaque {
      * @param t A torre que está a atacar.
      * @return O Bloon alvo ou null.
      */
-    Bloon escolherAlvo(List<Bloon> bloonsAlcance, Torre t);
+   Bloon escolherAlvo(Torre t, List<Bloon> bloonsAoAlcance);
 }

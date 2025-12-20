@@ -102,20 +102,16 @@ public class BloonMultiCamada extends BloonSimples implements Cloneable{
 	}
 
 	@Override
-    public Bloon clone() {
-        try {
-            // O super.clone() faz uma cópia "rasa" (copia os valores dos campos)
-            BloonMultiCamada copia = (BloonMultiCamada) super.clone();
-            
-            // Se o bloon tiver objetos complexos dentro (ex: uma lista de buffs), 
-            // tens de os clonar manualmente aqui (Deep Copy).
-            // Mas para primitivos (vida, velocidade), o super.clone() chega.
-			
-            
-            return copia;
-    	} catch (CloneNotSupportedException e) {
-            return null; // Não deve acontecer se implementares Cloneable
-        }
-    }
+	public Bloon clone() {
+		// 1. O super.clone() chama o BloonSimples.clone()
+		// Logo, a lista de observadores JÁ VEM LIMPA daqui.
+		BloonMultiCamada copia = (BloonMultiCamada) super.clone();
+		
+		// 2. (Opcional mas recomendado) Copiar a lista de bloons internos
+		// para garantir que se adicionarmos bloons à cópia, não afetamos o molde.
+		copia.bloons = new ArrayList<>(this.bloons);
+		
+		return copia;
+	}
 	
 }

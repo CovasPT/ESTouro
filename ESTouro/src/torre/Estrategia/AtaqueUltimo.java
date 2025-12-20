@@ -11,12 +11,12 @@ import torre.Torre;
 public class AtaqueUltimo implements EstrategiaAtaque {
 
     @Override
-    public Bloon escolherAlvo(List<Bloon> bloonsAlcance, Torre t) {
-        if (bloonsAlcance == null || bloonsAlcance.isEmpty()) {
+    public Bloon escolherAlvo(Torre t, List<Bloon> bloonsAoAlcance) {
+        if (bloonsAoAlcance == null || bloonsAoAlcance.isEmpty()) {
             return null;
         }
         // Retorna o bloon com menor posição no caminho
-        return bloonsAlcance.stream()
+        return bloonsAoAlcance.stream()
                 .min((b1, b2) -> Integer.compare(b1.getPosicaoNoCaminho(), b2.getPosicaoNoCaminho()))
                 .orElse(null);
     }

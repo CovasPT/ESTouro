@@ -2,108 +2,41 @@ package torre;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.util.List;
-
 import bloon.Bloon;
-import prof.jogos2D.image.ComponenteAnimado;
 import prof.jogos2D.image.ComponenteMultiAnimado;
 import prof.jogos2D.image.ComponenteSimples;
 import prof.jogos2D.image.ComponenteVisual;
-import prof.jogos2D.util.DetectorColisoes;
 import prof.jogos2D.util.ImageLoader;
-import torre.projetil.BombaImpacto;
-import torre.projetil.Dardo;
+import torre.projetil.Dardo; // A Ninja usa Dardos (Shurikens)
 import torre.projetil.Projetil;
 
-/**
- * Classe que representa a torre ninja. Esta torre dispara alternadamente 3
- * dardos ou 1 granada para os bloons de acordo com o seu modo de ataque.
- */
 public class TorreNinja extends TorreDefault {
 
-    private boolean dardos = false;
+	public TorreNinja(BufferedImage img) {
+		super(new ComponenteMultiAnimado(new Point(50, 50), img, 2, 4, 2),
+				10, 0, new Point(25, 0), 150); // Ritmo rápido (10)
+	}
 
-    /**
-     * Cria uma torre ninja
-     * 
-     * @param img a imagem da torre
-     */
-    public TorreNinja(BufferedImage img) {
-        super(new ComponenteMultiAnimado(new Point(50, 50), img, 2, 4, 3), 30, 8, new Point(20, 0), 100);
-    }
+	@Override
+	protected Projetil[] criarProjetil(Point posicao, double angulo, Bloon alvo) {
+		// A Ninja lança 2 shurikens de cada vez
+		Projetil[] projeteis = new Projetil[2];
+		
+		ComponenteVisual img = new ComponenteSimples(ImageLoader.getLoader().getImage("data/torres/dardo.gif"));
+		
+		// Shuriken 1: Ligeiramente para a esquerda (-0.1 radianos)
+		projeteis[0] = new Dardo(img, angulo - 0.1, 15, 3);
+		projeteis[0].setPosicao(posicao);
+		projeteis[0].setAlcance(getRaioAcao() + 30);
 
-    @Override
-    public Projetil[] atacar(List<Bloon> bloons) {
-        atualizarCicloDisparo();
-
-        // vamos buscar o desenho pois vai ser preciso várias vezes
-        ComponenteMultiAnimado anim = getComponente();
-
-        // já acabou a animação de disparar? volta à animação de pausa
-        if (anim.getAnim() == ATAQUE_ANIM && anim.numCiclosFeitos() >= 1) {
-            anim.setAnim(PAUSA_ANIM);
-        }
-
-        // determinar a posição do bloon alvo, consoante o método de ataque
-        Point posAlvo = null;
-        // ver quais os bloons que estão ao alcance
-        List<Bloon> alvosPossiveis = getBloonsInRadius(bloons, getComponente().getPosicaoCentro(), getRaioAcao());
-        if (alvosPossiveis.size() == 0)
-            return new Projetil[0];
-
-		// USAR STRATEGY
-		Bloon alvo = getEstrategia().escolherAlvo(alvosPossiveis, this);
-		posAlvo = (alvo != null) ? alvo.getComponente().getPosicaoCentro() : null;
-
-        if (posAlvo == null)
-            return new Projetil[0];
-
-        // ver o ângulo que o alvo faz com a torre, para assim rodar esta
-        double angle1 = DetectorColisoes.getAngulo(posAlvo, anim.getPosicaoCentro());
-        anim.setAngulo(angle1);
-
-        // ajustar o ângulo
-        double angle = angle1;
-
-        // se vai disparar daqui a pouco, começamos já com a animação de ataque
-        // para sincronizar a frame de disparo com o disparo real
-        sincronizarFrameDisparo(anim);
-
-        // se ainda não está na altura de disparar, não dispara
-        if (!podeDisparar())
-            return new Projetil[0];
-
-        // disparar
-        resetTempoDisparar();
-		Point centro = getComponente().getPosicaoCentro();
-
-        // primeiro calcular o ponto de disparo
-        Point disparo = getPontoDisparo();
-        double cosA = Math.cos(angle);
-        double senA = Math.sin(angle);
-        int px = (int) (disparo.x * cosA - disparo.y * senA);
-        int py = (int) (disparo.y * cosA + disparo.x * senA); // repor o tempo de disparo
-        Point shoot = new Point(centro.x + px, centro.y + py);
-
-        // depois criar os projéteis
-        dardos = !dardos; // inverter a vez
-        if (dardos) {
-            Projetil p[] = new Projetil[3];
-            for (int i = 0; i < 3; i++) {
-                ComponenteVisual img = new ComponenteAnimado(new Point(),
-                        (BufferedImage) ImageLoader.getLoader().getImage("data/torres/dardo.gif"), 2, 2);
-                p[i] = new Dardo(img, angle + (i - 1) * Math.PI / 6, 10, 3);
-                p[i].setPosicao(shoot);
-                p[i].setAlcance(getRaioAcao() + 30);
-            }
-            return p;
-        } else {
-            Projetil p[] = new Projetil[1];
-            ComponenteVisual img = new ComponenteSimples(ImageLoader.getLoader().getImage("data/torres/bomba.gif"));
-            p[0] = new BombaImpacto(img, angle, 12, 1, getMundo());
-            p[0].setPosicao(shoot);
-            p[0].setAlcance(getRaioAcao() + 20);
-            return p;
-        }
-    }
+		// Shuriken 2: Ligeiramente para a direita (+0.1 radianos)
+		// Precisamos de uma nova imagem para o segundo objeto visual
+		ComponenteVisual img2 = new ComponenteSimples(ImageLoader.getLoader().getImage("data/torres/dardo.gif"));
+		
+		projeteis[1] = new Dardo(img2, angulo + 0.1, 15, 3);
+		projeteis[1].setPosicao(posicao);
+		projeteis[1].setAlcance(getRaioAcao() + 30);
+		
+		return projeteis;
+	}
 }

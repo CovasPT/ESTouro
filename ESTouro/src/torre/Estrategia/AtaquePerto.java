@@ -12,13 +12,13 @@ import torre.Torre;
 public class AtaquePerto implements EstrategiaAtaque {
 
     @Override
-    public Bloon escolherAlvo(List<Bloon> bloonsAlcance, Torre t) {
-        if (bloonsAlcance == null || bloonsAlcance.isEmpty()) {
+    public Bloon escolherAlvo(Torre t, List<Bloon> bloonsAoAlcance) {
+        if (bloonsAoAlcance == null || bloonsAoAlcance.isEmpty()) {
             return null;
         }
         Point centroTorre = t.getComponente().getPosicaoCentro();
         
-        return bloonsAlcance.stream()
+        return bloonsAoAlcance.stream()
                 .min((b1, b2) -> Double.compare(b1.getComponente().getPosicaoCentro().distance(centroTorre), 
                                                 b2.getComponente().getPosicaoCentro().distance(centroTorre)))
                 .orElse(null);

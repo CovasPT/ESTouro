@@ -7,6 +7,7 @@ import java.util.List;
 import bloon.Bloon;
 import prof.jogos2D.image.*;
 import prof.jogos2D.util.ImageLoader;
+import torre.projetil.BombaImpacto;
 import torre.projetil.Dardo;
 import torre.projetil.Projetil;
 
@@ -25,67 +26,19 @@ public class TorreOctogonal extends TorreDefault {
 	}
 
 	@Override
-	public Projetil[] atacar(List<Bloon> bloons) {
-		atualizarCicloDisparo();
-
-		// vamos buscar o desenho pois vai ser preciso várias vezes
-		ComponenteMultiAnimado anim = getComponente();
-
-		// já acabou a animação de disparar? volta à animação de pausa
-		if (anim.getAnim() == ATAQUE_ANIM && anim.numCiclosFeitos() >= 1) {
-			anim.setAnim(PAUSA_ANIM);
-		}
-
-		// determinar a posição do bloon alvo, consoante o método de ataque
-		Point posAlvo = null;
-		// ver quais os bloons que estão ao alcance
-		List<Bloon> alvosPossiveis = getBloonsInRadius(bloons, getComponente().getPosicaoCentro(), getRaioAcao());
-		if (alvosPossiveis.size() == 0)
-			return new Projetil[0];
-
-		// USAR STRATEGY: Verifica se existe um alvo válido segundo a estratégia
-		Bloon alvo = getEstrategia().escolherAlvo(alvosPossiveis, this);
-		posAlvo = (alvo != null) ? alvo.getComponente().getPosicaoCentro() : null;
-
-		if (posAlvo == null)
-			return new Projetil[0];
-
-		// ver o ângulo que o alvo faz com a torre, para assim rodar esta
-		double angle = (double) 0; // neste caso o ângulo não interessa pois são 8
-
-		// se vai disparar daqui a pouco, começamos já com a animação de ataque
-		// para sincronizar a frame de disparo com o disparo real
-		sincronizarFrameDisparo(anim);
-
-		// se ainda não está na altura de disparar, não dispara
-		if (!podeDisparar())
-			return new Projetil[0];
-
-		// disparar
-		resetTempoDisparar();
-
-		// primeiro calcular o ponto de disparo
-		Point centro1 = getComponente().getPosicaoCentro();
-		Point disparo = getPontoDisparo();
-		double cosA = Math.cos(angle);
-		double senA = Math.sin(angle);
-		int px = (int) (disparo.x * cosA - disparo.y * senA);
-		int py = (int) (disparo.y * cosA + disparo.x * senA); // repor o tempo de disparo
-		Point shoot = new Point(centro1.x + px, centro1.y + py);
-
-		// depois criar os projéteis
-		/// disparar os 8 dardos
-		Projetil p[] = new Projetil[8];
-		double angulo = baseAngle + Math.PI / 2;
-		double incAng = Math.PI / 4;
-		for (int i = 0; i < 8; i++) {
-			ComponenteVisual img = new ComponenteAnimado(new Point(),
-					(BufferedImage) ImageLoader.getLoader().getImage("data/torres/dardo.gif"), 2, 2);
-			p[i] = new Dardo(img, angulo, 8, 1);
-			p[i].setPosicao(shoot);
-			p[i].setAlcance(getRaioAcao() + 15);
-			angulo -= incAng;
-		}
+	protected Projetil[] criarProjetil(Point posicao, double angulo, Bloon alvo) {
+		Projetil p[] = new Projetil[1];
+		
+		// Carrega a imagem da bomba
+		ComponenteVisual img = new ComponenteSimples(ImageLoader.getLoader().getImage("data/torres/bomba.gif"));
+		
+		// Cria o objeto BombaImpacto
+		p[0] = new BombaImpacto(img, angulo, 12, 2, getMundo());
+		
+		// Configurações iniciais
+		p[0].setPosicao(posicao);
+		p[0].setAlcance(getRaioAcao() + 20);
+		
 		return p;
 	}
 

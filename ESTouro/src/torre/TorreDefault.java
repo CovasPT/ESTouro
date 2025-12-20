@@ -14,43 +14,25 @@ import prof.jogos2D.image.ComponenteMultiAnimado;
 import prof.jogos2D.util.DetectorColisoes;
 import torre.Estrategia.AtaquePrimeiro;
 import torre.Estrategia.EstrategiaAtaque;
+import torre.projetil.Projetil; // Import necessário
 
-
-/**
- * Classe que implementa os comportamentos e variáveis comuns a todos as torres.
- * Tambám possui alguns métodos auxiliares para as várias torres
- */
 public abstract class TorreDefault implements Torre {
 
-	private Mundo mundo; // mundo onde está a torre
-	private ComponenteMultiAnimado imagem; // desenho da torre
+	private Mundo mundo;
+	private ComponenteMultiAnimado imagem;
 
-	private int modoAtaque = ATACA_PRIMEIRO; // modo de ataque da torre
-	private EstrategiaAtaque estrategia; // estratégia de ataque atual
-	private int raioAtaque; // raio de ataque, isto é, área circular onde consegue detetar bloons
-	private Point pontoDisparo; // ponto de onde sai o disparo
+	// O modo antigo (int) deixa de ser necessário, mas mantemos por compatibilidade se quiseres
+	private int modoAtaque = ATACA_PRIMEIRO; 
+	private EstrategiaAtaque estrategia; 
+	private int raioAtaque;
+	private Point pontoDisparo;
 
-	protected static final int PAUSA_ANIM = 0; // identifica a animação quando não está a disparar
-	protected static final int ATAQUE_ANIM = 1; // identifica a animação de disparar
-	private int ritmoDisparo; // velocidade de disparo
-	private int proxDisparo; // quando volta a disparar
-	private int frameDisparoDelay; // delay desde que a animação de disparo começa até que "realmente" dispara
-	public List <Bloon> bloonsAoAlcance;
+	protected static final int PAUSA_ANIM = 0;
+	protected static final int ATAQUE_ANIM = 1;
+	private int ritmoDisparo;
+	private int proxDisparo;
+	private int frameDisparoDelay;
 
-
-	/**
-	 * Construtor da torre. Cria uma torre dando-lhe uma imagem, um ponto de disparo
-	 * e um raio de ataque. O ponto de disparo é a coordenada de onde sai o projétil
-	 * e é dado relativamente ao ponto central da torre. O raio de ataque é o raio,
-	 * a partir do centro da torre em que esta deteta bloons
-	 * 
-	 * @param cv           A imagem a usar para a torre
-	 * @param ritmoDisparo quantos ciclos demora entre disparos
-	 * @param delayDisparo delay da animação em que realmente ocorre o disparo
-	 * @param pontoDisparo o ponto de disparo da torre, isto é, de onde sai o
-	 *                     projétil. Coordenada relativa ao centro da torre
-	 * @param raioAtaque   distãncia dentro da qual deteta bloons
-	 */
 	public TorreDefault(ComponenteMultiAnimado cv, int ritmoDisparo, int delayDisparo, Point pontoDisparo,
 			int raioAtaque) {
 		imagem = Objects.requireNonNull(cv);
@@ -59,8 +41,60 @@ public abstract class TorreDefault implements Torre {
 		this.frameDisparoDelay = delayDisparo;
 		this.pontoDisparo = Objects.requireNonNull(pontoDisparo);
 		this.raioAtaque = raioAtaque;
-		this.estrategia = new AtaquePrimeiro(); // Estratégia padrão
+		this.estrategia = new AtaquePrimeiro(); // Estratégia por defeito
 	}
+
+	// --- TEMPLATE METHOD: O ATAQUE GENÉRICO ---
+	@Override
+	public Projetil[] atacar(List<Bloon> bloons) {
+		atualizarCicloDisparo();
+		ComponenteMultiAnimado anim = getComponente();
+
+		// 1. Gestão da Animação
+		if (anim.getAnim() == ATAQUE_ANIM && anim.numCiclosFeitos() >= 1) {
+			anim.setAnim(PAUSA_ANIM);
+		}
+
+		// 2. Escolher o Alvo (Usando STRATEGY)
+		List<Bloon> alvosPossiveis = getBloonsInRadius(bloons, getComponente().getPosicaoCentro(), getRaioAcao());
+		if (alvosPossiveis.isEmpty()) return new Projetil[0];
+		
+		// Nota: Confirma se a ordem dos argumentos na tua Interface é (List, Torre) ou (Torre, List)
+		Bloon alvo = getEstrategia().escolherAlvo(this,alvosPossiveis );
+		
+		if (alvo == null) return new Projetil[0];
+		Point posAlvo = alvo.getComponente().getPosicaoCentro();
+
+		// 3. Rodar a Torre
+		double angle = DetectorColisoes.getAngulo(posAlvo, anim.getPosicaoCentro());
+		anim.setAngulo(angle);
+
+		// 4. Verificar Cooldown
+		sincronizarFrameDisparo(anim);
+		if (!podeDisparar()) return new Projetil[0];
+
+		// 5. Calcular Posição do Disparo
+		resetTempoDisparar();
+		Point centro = getComponente().getPosicaoCentro();
+		Point disparo = getPontoDisparo();
+		double cosA = Math.cos(angle);
+		double senA = Math.sin(angle);
+		int px = (int) (disparo.x * cosA - disparo.y * senA);
+		int py = (int) (disparo.y * cosA + disparo.x * senA);
+		Point pontoFinalDisparo = new Point(centro.x + px, centro.y + py);
+
+		// 6. Criar o Projétil Específico (HOOK / FACTORY METHOD)
+		// Aqui a classe pai delega na filha a criação do objeto concreto
+		return criarProjetil(pontoFinalDisparo, angle, alvo);
+	}
+
+	/**
+	 * Método Abstrato (Hook): Cada torre filha deve implementar isto para
+	 * devolver a sua Bomba, Dardo ou Míssil específico.
+	 */
+	protected abstract Projetil[] criarProjetil(Point posicao, double angulo, Bloon alvo);
+
+	// ---------------------------------------------------------
 
 	protected void atualizarCicloDisparo() {
 		proxDisparo++;
@@ -143,6 +177,14 @@ public abstract class TorreDefault implements Torre {
 	public int getModoAtaque() {
 		return modoAtaque;
 	}
+    
+    // Mantemos o setModoAtaque apenas para compatibilidade, mas o ideal é usar setEstrategia
+    @Override
+	public void setModoAtaque(int mode) {
+		this.modoAtaque = mode;
+        // Podes adicionar aqui um switch temporário se o configurador ainda enviar ints,
+        // mas como já mudámos o configurador, isto pode ficar vazio ou depreciado.
+	}
 
 	@Override
 	public void setEstrategia(EstrategiaAtaque estrategia) {
@@ -154,30 +196,10 @@ public abstract class TorreDefault implements Torre {
 		return estrategia;
 	}
 
-	/**
-	 * Retorna uma lista com os bloons que estejam dentro de um raio de
-	 * ação circular
-	 * 
-	 * @param bloons lista de bloons a verificar
-	 * @param center centro do raio de ação
-	 * @param radius raio de ação
-	 * @return lista de bloons que estão dentro desse raio de ação
-	 */
 	protected List<Bloon> getBloonsInRadius(List<Bloon> bloons, Point center, int radius) {
 		return bloons.stream().filter(b -> DetectorColisoes.intersectam(b.getBounds(), center, radius)).toList();
 	}
 
-		Bloon alvo = EstrategiaAtaque.escolherAlvo(Torre t, bloonsAoAlcance);
-
-
-	/**
-	 * Retorna uma lista com os bloons que intersetam um segmento de reta
-	 * 
-	 * @param bloons lista de bloons a verificar
-	 * @param p1     ponto de início do segemento de reta
-	 * @param p2     ponto de fim do segment de reta
-	 * @return lista de bloons que tocam nesse segmento de reta
-	 */
 	protected List<Bloon> getBloonsInLine(List<Bloon> bloons, Point p1, Point p2) {
 		return bloons.stream().filter(b -> b.getBounds().intersectsLine(p1.x, p1.y, p2.x, p2.y)).toList();
 	}
@@ -189,9 +211,8 @@ public abstract class TorreDefault implements Torre {
 			copia.imagem = imagem.clone();
 			copia.mundo = null;
 			copia.pontoDisparo = new Point(pontoDisparo);
-			// Nota: a estratégia é partilhada ou recriada? Aqui mantemos a referência ou criamos nova se for stateful.
-			// Como AtaquePrimeiro é stateless, não há problema, mas idealmente reconfiguramos:
-			copia.setModoAtaque(modoAtaque); 
+            // Se a estratégia for stateless, partilhamos. Senão, deveríamos clonar.
+            // Para já fica assim.
 			return copia;
 		} catch (CloneNotSupportedException e) {
 			return null;

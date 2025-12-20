@@ -14,13 +14,13 @@ import torre.Torre;
 public class AtaqueJuntos implements EstrategiaAtaque {
 
     @Override
-    public Bloon escolherAlvo(List<Bloon> bloonsAlcance, Torre t) {
-        if (bloonsAlcance == null || bloonsAlcance.isEmpty()) {
+    public Bloon escolherAlvo(Torre t, List<Bloon> bloonsAoAlcance) {
+        if (bloonsAoAlcance == null || bloonsAoAlcance.isEmpty()) {
             return null;
         }
 
         // Agrupa bloons por segmentos de caminho (divisão por 20)
-        Map<Integer, List<Bloon>> posicoes = bloonsAlcance.stream()
+        Map<Integer, List<Bloon>> posicoes = bloonsAoAlcance.stream()
                 .collect(Collectors.groupingBy(b -> b.getPosicaoNoCaminho() / 20));
         
         // Encontra o segmento com mais bloons

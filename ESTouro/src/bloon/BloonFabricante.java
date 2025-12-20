@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import mundo.Mundo;
 import prof.jogos2D.image.ComponenteVisual;
 
 /**
@@ -60,27 +61,27 @@ public class BloonFabricante extends BloonSimples implements Cloneable{
             // TODO esta parte tem de ser revista pois está a usar repetidamente os mesmos
             // bloons
             Bloon escolhido = provaveis.get(idx).clone();
+           
             escolhido.setCaminho(getCaminho());
             getMundo().addBloonPendente(escolhido);
             escolhido.setPosicaoNoCaminho(pos + pathOffset);
             getObservers().forEach(o -> escolhido.addBloonObserver(o));
             proximaCriacao = ritmoCriacao;
+
+            
         }
     }
 
     @Override
-    public Bloon clone() {
-        try {
-            // O super.clone() faz uma cópia "rasa" (copia os valores dos campos)
-            BloonFabricante copia = (BloonFabricante) super.clone();
-            
-            // Se o bloon tiver objetos complexos dentro (ex: uma lista de buffs), 
-            // tens de os clonar manualmente aqui (Deep Copy).
-            // Mas para primitivos (vida, velocidade), o super.clone() chega.
-            
-            return copia;
-        } catch (CloneNotSupportedException e) {
-            return null; // Não deve acontecer se implementares Cloneable
-        }
-    }
+	public Bloon clone() {
+		// 1. O super.clone() chama o BloonSimples.clone()
+        // Logo, a lista de observadores JÁ VEM LIMPA daqui.
+        BloonFabricante copia = (BloonFabricante) super.clone();
+        
+        // 2. (Opcional mas recomendado) Copiar a lista de bloons internos
+        // para garantir que se adicionarmos bloons à cópia, não afetamos o molde.
+        copia.provaveis = new ArrayList<>(this.provaveis);
+        
+        return copia;
+	}
 }
