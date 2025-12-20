@@ -1,4 +1,4 @@
-package torre;
+package torre.Estrategia;
 
 
 import java.util.Collections;

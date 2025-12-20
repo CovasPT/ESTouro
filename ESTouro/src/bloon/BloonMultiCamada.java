@@ -9,7 +9,7 @@ import prof.jogos2D.image.ComponenteVisual;
  * Classe que representa um bloon que quando estoura liberta vários bloons que
  * estavam no seu interior.
  */
-public class BloonMultiCamada extends BloonSimples {
+public class BloonMultiCamada extends BloonSimples implements Cloneable{
 
 	/** A lista com os bloons que serão libertados quando este se estoura */
 	private List<Bloon> bloons = new ArrayList<>();
@@ -87,7 +87,8 @@ public class BloonMultiCamada extends BloonSimples {
 	private void libertarBloons() {
 		// colocar os bloons no local deste, ou à frente e atrás
 		int pathOffset = 0;
-		for (Bloon b : bloons) {
+		for (Bloon molde : bloons) {
+			Bloon b = molde.clone();
 			b.setCaminho(getCaminho());
 			getMundo().addBloonPendente(b);
 			int pos = getPosicaoNoCaminho();
@@ -99,4 +100,22 @@ public class BloonMultiCamada extends BloonSimples {
 			getObservers().forEach(o -> b.addBloonObserver(o));
 		}
 	}
+
+	@Override
+    public Bloon clone() {
+        try {
+            // O super.clone() faz uma cópia "rasa" (copia os valores dos campos)
+            BloonMultiCamada copia = (BloonMultiCamada) super.clone();
+            
+            // Se o bloon tiver objetos complexos dentro (ex: uma lista de buffs), 
+            // tens de os clonar manualmente aqui (Deep Copy).
+            // Mas para primitivos (vida, velocidade), o super.clone() chega.
+			
+            
+            return copia;
+    	} catch (CloneNotSupportedException e) {
+            return null; // Não deve acontecer se implementares Cloneable
+        }
+    }
+	
 }

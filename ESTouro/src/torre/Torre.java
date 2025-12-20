@@ -3,10 +3,10 @@ package torre;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.List;
-
 import bloon.Bloon;
 import mundo.Mundo;
 import prof.jogos2D.image.ComponenteMultiAnimado;
+import torre.Estrategia.EstrategiaAtaque;
 import torre.projetil.Projetil;
 
 /**

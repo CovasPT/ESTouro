@@ -221,4 +221,22 @@ public class BloonSimples implements Bloon {
 		for (int i = obs.size() - 1; i >= 0; i--)
 			obs.get(i).bloonEscapou(this);
 	}
+
+	@Override
+    public Bloon clone() {
+        try {
+            // O super.clone() faz uma cópia "rasa" (copia os valores dos campos)
+            BloonSimples copia = (BloonSimples) super.clone();
+
+			copia.obs = new ArrayList<>();
+            
+            // Se o bloon tiver objetos complexos dentro (ex: uma lista de buffs), 
+            // tens de os clonar manualmente aqui (Deep Copy).
+            // Mas para primitivos (vida, velocidade), o super.clone() chega.
+            
+            return copia;
+        } catch (CloneNotSupportedException e) {
+            return null; // Não deve acontecer se implementares Cloneable
+        }
+    }
 }

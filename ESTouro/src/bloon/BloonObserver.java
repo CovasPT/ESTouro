@@ -19,4 +19,6 @@ public interface BloonObserver {
 	 * @param b bloon que escapou
 	 */
 	public void bloonEscapou(Bloon b);
+
+	
 }

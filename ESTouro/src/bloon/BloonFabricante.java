@@ -10,7 +10,7 @@ import prof.jogos2D.image.ComponenteVisual;
  * Bloon que cria outros bloons. A criação de bloons é aleatória, dentro de uma
  * lista de bloons prováveis.
  */
-public class BloonFabricante extends BloonSimples {
+public class BloonFabricante extends BloonSimples implements Cloneable{
     // a lista de bloons prováveis de serem criados
     private List<Bloon> provaveis = new ArrayList<>();
     private int ritmoCriacao; // ritmo de criação
@@ -59,12 +59,28 @@ public class BloonFabricante extends BloonSimples {
                 pathOffset = 0;
             // TODO esta parte tem de ser revista pois está a usar repetidamente os mesmos
             // bloons
-            Bloon escolhido = provaveis.get(idx);
+            Bloon escolhido = provaveis.get(idx).clone();
             escolhido.setCaminho(getCaminho());
             getMundo().addBloonPendente(escolhido);
             escolhido.setPosicaoNoCaminho(pos + pathOffset);
             getObservers().forEach(o -> escolhido.addBloonObserver(o));
             proximaCriacao = ritmoCriacao;
+        }
+    }
+
+    @Override
+    public Bloon clone() {
+        try {
+            // O super.clone() faz uma cópia "rasa" (copia os valores dos campos)
+            BloonFabricante copia = (BloonFabricante) super.clone();
+            
+            // Se o bloon tiver objetos complexos dentro (ex: uma lista de buffs), 
+            // tens de os clonar manualmente aqui (Deep Copy).
+            // Mas para primitivos (vida, velocidade), o super.clone() chega.
+            
+            return copia;
+        } catch (CloneNotSupportedException e) {
+            return null; // Não deve acontecer se implementares Cloneable
         }
     }
 }

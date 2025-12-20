@@ -146,4 +146,7 @@ public class TorreBalista extends TorreDefault {
 		copia.mira = new Point(mira);
 		return copia;
 	}
+
+
+ 
 }

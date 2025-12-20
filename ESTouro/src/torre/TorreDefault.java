@@ -12,6 +12,8 @@ import bloon.Bloon;
 import mundo.Mundo;
 import prof.jogos2D.image.ComponenteMultiAnimado;
 import prof.jogos2D.util.DetectorColisoes;
+import torre.Estrategia.AtaquePrimeiro;
+import torre.Estrategia.EstrategiaAtaque;
 
 
 /**
@@ -33,6 +35,8 @@ public abstract class TorreDefault implements Torre {
 	private int ritmoDisparo; // velocidade de disparo
 	private int proxDisparo; // quando volta a disparar
 	private int frameDisparoDelay; // delay desde que a animação de disparo começa até que "realmente" dispara
+	public List <Bloon> bloonsAoAlcance;
+
 
 	/**
 	 * Construtor da torre. Cria uma torre dando-lhe uma imagem, um ponto de disparo
@@ -136,28 +140,6 @@ public abstract class TorreDefault implements Torre {
 	}
 
 	@Override
-	public void setModoAtaque(int modo) {
-		modoAtaque = modo;
-		// Atualiza a estratégia com base no modo
-		switch (modo) {
-			case ATACA_PRIMEIRO:
-				this.estrategia = new AtaquePrimeiro();
-				break;
-			case ATACA_ULTIMO:
-				this.estrategia = new AtaqueUltimo();
-				break;
-			case ATACA_PERTO:
-				this.estrategia = new AtaquePerto();
-				break;
-			case ATACA_JUNTOS:
-				this.estrategia = new AtaqueJuntos();
-				break;
-			default:
-				this.estrategia = new AtaquePrimeiro();
-		}
-	}
-
-	@Override
 	public int getModoAtaque() {
 		return modoAtaque;
 	}
@@ -184,6 +166,9 @@ public abstract class TorreDefault implements Torre {
 	protected List<Bloon> getBloonsInRadius(List<Bloon> bloons, Point center, int radius) {
 		return bloons.stream().filter(b -> DetectorColisoes.intersectam(b.getBounds(), center, radius)).toList();
 	}
+
+		Bloon alvo = EstrategiaAtaque.escolherAlvo(Torre t, bloonsAoAlcance);
+
 
 	/**
 	 * Retorna uma lista com os bloons que intersetam um segmento de reta
