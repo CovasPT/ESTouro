@@ -17,6 +17,8 @@ import torre.Estrategia.AtaquePrimeiro;
 import torre.Estrategia.AtaqueUltimo;
 import torre.Estrategia.AtaquePerto;
 import torre.Estrategia.AtaqueJuntos;
+import torre.Estrategia.AtaqueLonge;
+import torre.Estrategia.AtaqueForte;
 // Importar as futuras estratégias quando as criares:
 // import torre.AtaqueLonge;
 // import torre.AtaqueForte;
@@ -54,10 +56,8 @@ public class ConfiguradorTorres extends JPanel {
 		painelAtaques.add(criarBotaoAtaque("Último", new AtaqueUltimo()));
 		painelAtaques.add(criarBotaoAtaque("Perto", new AtaquePerto()));
 		painelAtaques.add(criarBotaoAtaque("Juntos", new AtaqueJuntos()));
-
-		// TODO: Quando criares as classes AtaqueLonge e AtaqueForte, descomenta isto:
-		// painelAtaques.add(criarBotaoAtaque("Longe", new AtaqueLonge()));
-		// painelAtaques.add(criarBotaoAtaque("Forte", new AtaqueForte()));
+		painelAtaques.add(criarBotaoAtaque("Longe", new AtaqueLonge()));
+		painelAtaques.add(criarBotaoAtaque("Forte", new AtaqueForte()));
 	}
 
 	/**

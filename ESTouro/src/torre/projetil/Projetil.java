@@ -3,7 +3,7 @@ package torre.projetil;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.List;
-
+import mundo.Mundo;
 import bloon.Bloon;
 import prof.jogos2D.image.*;
 
@@ -63,5 +63,7 @@ public interface Projetil {
 	 * @param alcance novo alcance do projétil
 	 */
 	public void setAlcance(int alcance);
+
+	public void setMundo(Mundo m);
 
 }

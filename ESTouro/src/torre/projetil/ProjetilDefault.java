@@ -3,7 +3,7 @@ package torre.projetil;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.List;
-
+import mundo.Mundo;
 import bloon.Bloon;
 import prof.jogos2D.image.ComponenteVisual;
 
@@ -20,6 +20,7 @@ public class ProjetilDefault implements Projetil {
 	private int alcance; // raio de alcance
 	private int distanciaViajada = 0; // quanto é que já viajou
 	private int estrago; // qual o estrago que inflige
+	private Mundo mundo;
 
 	/**
 	 * Para criar um projétil deve-se indicar qual a sua imagem, direção, velocidade
@@ -155,4 +156,14 @@ public class ProjetilDefault implements Projetil {
 	public void setVelocidade(double veloc) {
 		this.velocidade = veloc;
 	}
+
+	@Override
+    public void setMundo(Mundo m) {
+        this.mundo = m;
+    }
+
+    // 3. (Opcional mas útil) Getter para as subclasses usarem
+    protected Mundo getMundo() {
+        return mundo;
+    }
 }

@@ -778,8 +778,6 @@ public class EstouroJogo extends JFrame implements BloonObserver {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
-		System.out.println("O Java está a correr nesta pasta: " + new java.io.File(".").getAbsolutePath());
 		EstouroJogo estouro = new EstouroJogo();
 		estouro.setVisible(true);
 		estouro.play();

@@ -20,6 +20,7 @@ public class TorreCreator {
 	 * @return a torre criada, ou null se não existir torre com o nome dado
 	 */
 	public Torre criarTorrePorNome(String nome) {
+		System.out.println("DEBUG: O Factory recebeu o nome: [" + nome + "]"); // <--- ADICIONA ISTO
 		// TODO suportar também a Sniper
 		switch (nome) {
 			case "octo":
@@ -34,6 +35,8 @@ public class TorreCreator {
 				return criarBalista();
 			case "ninja":
 				return criarNinja();
+			case "sniper":
+				return criarSniper();
 		}
 		return null;
 	}
@@ -72,6 +75,12 @@ public class TorreCreator {
 	public Torre criarNinja() {
 		Image img = loader.getImage("data/torres/ninja/imagem.gif");
 		return new TorreNinja((BufferedImage) img);
+	}
+
+	public Torre criarSniper() {
+		System.out.println("DEBUG: A tentar criar o Sniper...");
+		Image img = loader.getImage("data/torres/sniper/imagem.gif");
+		return new TorreSniper((BufferedImage) img);
 	}
 
 }
