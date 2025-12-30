@@ -7,6 +7,7 @@ import prof.jogos2D.image.ComponenteMultiAnimado;
 import prof.jogos2D.image.ComponenteSimples;
 import prof.jogos2D.image.ComponenteVisual;
 import prof.jogos2D.util.ImageLoader;
+import torre.Estrategia.AtaqueLonge;
 import torre.projetil.Dardo;
 import torre.projetil.Projetil;
 
@@ -16,7 +17,9 @@ public class TorreSniper extends TorreDefault {
 		// O Sniper dispara devagar (60 frames delay), mas tem alcance infinito
 		// O '1000' aqui é só um valor base, o override em baixo trata do resto
 		super(new ComponenteMultiAnimado(new Point(50, 50), img, 2, 4, 2),
-				60, 0, new Point(25, 0), 1000); 
+				60, 0, new Point(25, 0), 1000);
+        setEstrategia(new AtaqueLonge());
+                
 	}
 
 	/**
@@ -45,5 +48,10 @@ public class TorreSniper extends TorreDefault {
 		projeteis[0].setMundo(getMundo());
 		
 		return projeteis;
+	}
+
+	@Override
+	public String getIdentificadorSave() {
+		return "sniper";
 	}
 }

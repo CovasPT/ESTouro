@@ -6,7 +6,6 @@ import javax.swing.*;
 
 import bloon.Bloon;
 import bloon.BloonObserver;
-import game.manipulator.ManipuladorCreator;
 import game.manipulator.ManipuladorTorre;
 
 import java.io.*;
@@ -536,7 +535,7 @@ public class EstouroJogo extends JFrame implements BloonObserver {
 		public void mousePressed(Point p) {
 			torreSel = mundo.getTowerAt(p);
 			if (torreSel != null) {
-				ManipuladorTorre man = ManipuladorCreator.criarManipulador(torreSel);
+				ManipuladorTorre man = torreSel.criarManipulador(torreSel);
 				estadoAtual = new EstadoManipularTorre(man);
 				towerConfigPanel.setSelecionada(torreSel);
 				towerConfigPanel.setVisible(true);

@@ -1,4 +1,4 @@
-6
+7
 <torre>
 macaco
 Macaco Lançador
@@ -38,4 +38,10 @@ ninja
 Ninja
 500
 Alterna entre atirar 3 shurikans ou 1 granada.
+</torre>
+<torre>
+sniper
+Sniper
+100
+Torre de longo alcance. Dispara devagar mas acerta em qualquer sitio.
 </torre>

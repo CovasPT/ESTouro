@@ -8,6 +8,8 @@ import bloon.Bloon;
 import prof.jogos2D.image.*;
 import prof.jogos2D.util.DetectorColisoes;
 import prof.jogos2D.util.ImageLoader;
+import game.manipulator.ManipuladorTorre;
+import game.manipulator.ManipuladorMorteiro;
 import torre.projetil.BombaDirigida;
 import torre.projetil.BombaImpacto;
 import torre.projetil.Projetil;
@@ -91,6 +93,16 @@ public class TorreMorteiro extends TorreDefault {
 		TorreMorteiro copia = (TorreMorteiro) super.clone();
 		copia.areaAlvo = new Point(areaAlvo);
 		return copia;
+	}
+
+	@Override
+	public ManipuladorTorre criarManipulador() {
+		return new ManipuladorMorteiro(this);
+	}
+
+	@Override
+	public String getIdentificadorSave() {
+		return "morteiro";
 	}
 
 }

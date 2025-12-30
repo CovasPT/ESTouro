@@ -13,6 +13,8 @@ import java.util.List;
 import bloon.Bloon;
 import prof.jogos2D.image.*;
 import prof.jogos2D.util.ImageLoader;
+import game.manipulator.ManipuladorTorre;
+import game.manipulator.ManipuladorBalista;
 import torre.projetil.BombaImpacto;
 import torre.projetil.Dardo;
 import torre.projetil.Projetil;
@@ -114,6 +116,14 @@ public class TorreBalista extends TorreDefault {
 		return copia;
 	}
 
+	@Override
+	public ManipuladorTorre criarManipulador() {
+		return new ManipuladorBalista(this);
+	}
 
- 
+	@Override
+	public String getIdentificadorSave() {
+		return "balista";
+	}
+
 }

@@ -39,4 +39,9 @@ public class TorreCanhao extends TorreDefault {
 		
 		return p;
 	}
+
+	@Override
+	public String getIdentificadorSave() {
+		return "canhao";
+	}
 }

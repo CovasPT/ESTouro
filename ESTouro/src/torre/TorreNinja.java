@@ -39,4 +39,9 @@ public class TorreNinja extends TorreDefault {
 		
 		return projeteis;
 	}
+
+	@Override
+	public String getIdentificadorSave() {
+		return "ninja";
+	}
 }

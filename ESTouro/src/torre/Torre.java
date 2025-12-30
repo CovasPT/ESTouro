@@ -4,6 +4,8 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.List;
 import bloon.Bloon;
+import game.manipulator.ManipuladorTorre;
+import game.manipulator.ManipuladorVazio;
 import mundo.Mundo;
 import prof.jogos2D.image.ComponenteMultiAnimado;
 import torre.Estrategia.EstrategiaAtaque;
@@ -132,4 +134,15 @@ public interface Torre extends Cloneable {
 	 * @return uma torre igual à original
 	 */
 	public Torre clone();
+
+	public default ManipuladorTorre criarManipulador() {
+		return new ManipuladorVazio(this);
+	}
+
+	/**
+	 * Retorna o identificador único da torre para o sistema de save.
+	 * 
+	 * @return a string identificadora (ex: "macaco", "octo")
+	 */
+	public String getIdentificadorSave();
 }

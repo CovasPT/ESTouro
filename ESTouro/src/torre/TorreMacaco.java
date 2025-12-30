@@ -45,4 +45,9 @@ public class TorreMacaco extends TorreDefault {
 		return p;
 	}
 
+	@Override
+	public String getIdentificadorSave() {
+		return "macaco";
+	}
+
 }
